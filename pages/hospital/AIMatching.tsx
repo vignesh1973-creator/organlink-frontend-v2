@@ -111,6 +111,7 @@ export default function AIMatching() {
     null,
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const [visibleMatchesCount, setVisibleMatchesCount] = useState(5);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -290,6 +291,7 @@ export default function AIMatching() {
     setSearchingMatches(true);
     setSelectedPatient(patient);
     setMatches([]);
+    setVisibleMatchesCount(5);
 
     try {
       const token = localStorage.getItem("hospital_token");
@@ -421,14 +423,19 @@ export default function AIMatching() {
           showSuccess("Request declined. Patient is now available for other matches.");
         }
 
+        // Optimistic UI update: immediately remove the match from the list
+        setIncomingMatches(prev => prev.filter(m => getRequestId(m) !== requestId));
+
         // Mark notification as read
         try {
-          await fetch(`/api/hospital/notifications/${match.notification_id}/read`, {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          if (match.notification_id) {
+            await fetch(`/api/hospital/notifications/${match.notification_id}/read`, {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+          }
         } catch (err) {
           console.error("Failed to mark notification as read:", err);
         }
@@ -757,7 +764,7 @@ export default function AIMatching() {
 
                       {matches.length > 0 ? (
                         <div className="space-y-3">
-                          {matches.slice(0, 5).map((match, index) => (
+                          {matches.slice(0, visibleMatchesCount).map((match, index) => (
                             <div
                               key={match.donor_id}
                               className="border rounded-lg p-4"
@@ -768,7 +775,7 @@ export default function AIMatching() {
                                     {match.donor_name}
                                   </h4>
                                   <p className="text-sm text-gray-500">
-                                    {match.hospital_name} • {match.blood_type}
+                                    {match.hospital_name}{match.hospital_city ? `, ${match.hospital_city}` : ''}{match.hospital_state && !match.hospital_city ? `, ${match.hospital_state}` : ''} • {match.blood_type}
                                   </p>
                                 </div>
                                 <Badge
@@ -889,10 +896,25 @@ export default function AIMatching() {
                             </div>
                           ))}
 
-                          {matches.length > 5 && (
-                            <p className="text-sm text-gray-500 text-center">
-                              Showing top 5 of {matches.length} matches
-                            </p>
+                          {matches.length > visibleMatchesCount ? (
+                            <div className="flex flex-col items-center mt-4">
+                              <p className="text-sm text-gray-500 text-center mb-3">
+                                Showing top {visibleMatchesCount} of {matches.length} matches
+                              </p>
+                              <Button 
+                                variant="outline" 
+                                onClick={() => setVisibleMatchesCount(prev => prev + 5)}
+                                className="w-full sm:w-auto"
+                              >
+                                Show More Matches
+                              </Button>
+                            </div>
+                          ) : (
+                            matches.length > 0 && (
+                              <p className="text-sm text-gray-500 text-center mt-4 pt-4 border-t border-gray-100">
+                                Showing all {matches.length} matches
+                              </p>
+                            )
                           )}
                         </div>
                       ) : (

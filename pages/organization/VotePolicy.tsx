@@ -480,6 +480,12 @@ export default function VotePolicy() {
                             <Check className="h-4 w-4 text-green-500" /> You have already cast your vote for this policy.
                          </span>
                       </div>
+                    ) : policy.status !== 'Proposed' ? (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 text-center">
+                         <span className="text-gray-500 text-xs font-medium flex items-center justify-center gap-2">
+                            This policy is {policy.status.toLowerCase()} and is no longer accepting votes.
+                         </span>
+                      </div>
                     ) : (
                       <div className="grid grid-cols-2 gap-4">
                         <Button
