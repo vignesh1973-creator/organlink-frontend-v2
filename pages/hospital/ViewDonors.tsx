@@ -85,6 +85,8 @@ interface Donor {
   hospital_display_id?: number;
   organlink_id?: string;
   last_check_in?: string;
+  living_status?: string;
+  condition_reason?: string;
 }
 
 export default function ViewDonors() {
@@ -95,6 +97,7 @@ export default function ViewDonors() {
   const [filterOrgan, setFilterOrgan] = useState("all");
   const [filterBloodType, setFilterBloodType] = useState("all");
   const [filterActivity, setFilterActivity] = useState("all");
+  const [filterLivingStatus, setFilterLivingStatus] = useState("all");
   const [editingDonor, setEditingDonor] = useState<Donor | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [viewDonor, setViewDonor] = useState<Donor | null>(null);
@@ -228,7 +231,7 @@ export default function ViewDonors() {
 
   useEffect(() => {
     filterDonors();
-  }, [donors, searchTerm, filterOrgan, filterBloodType, filterActivity]);
+  }, [donors, searchTerm, filterOrgan, filterBloodType, filterActivity, filterLivingStatus]);
 
   const fetchDonors = async () => {
     try {
@@ -288,6 +291,13 @@ export default function ViewDonors() {
         const status = getActivityStatus(donor.last_check_in);
         return status.category === filterActivity;
       });
+    }
+
+    // Living status filter
+    if (filterLivingStatus && filterLivingStatus !== "all") {
+      filtered = filtered.filter((donor) => 
+        (donor.living_status || 'Living') === filterLivingStatus
+      );
     }
 
     setFilteredDonors(filtered);
@@ -530,8 +540,8 @@ export default function ViewDonors() {
         {/* Filters */}
         <Card className="mb-6">
           <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              <div className="relative xl:col-span-1">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Search donors..."
@@ -587,6 +597,20 @@ export default function ViewDonors() {
                 </SelectContent>
               </Select>
 
+              <Select
+                value={filterLivingStatus}
+                onValueChange={setFilterLivingStatus}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Living Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Donors</SelectItem>
+                  <SelectItem value="Living">Living</SelectItem>
+                  <SelectItem value="Deceased">Deceased</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Button
                 variant="outline"
                 onClick={() => {
@@ -594,6 +618,7 @@ export default function ViewDonors() {
                   setFilterOrgan("all");
                   setFilterBloodType("all");
                   setFilterActivity("all");
+                  setFilterLivingStatus("all");
                 }}
               >
                 <Filter className="h-4 w-4 mr-2" />
@@ -622,7 +647,7 @@ export default function ViewDonors() {
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900">{donor.full_name}</h3>
                             <p className="text-sm text-gray-500">
-                              ID: {donor.hospital_display_id ? `#${donor.hospital_display_id}` : donor.donor_id} • Age: {donor.age} • {donor.gender}
+                              ID: {donor.hospital_display_id ? `#${donor.hospital_display_id}` : donor.donor_id} • Age: {donor.age} • {donor.gender} • {donor.living_status || 'Living'}
                             </p>
                           </div>
                           <div className="flex flex-wrap gap-2">
@@ -695,7 +720,7 @@ export default function ViewDonors() {
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900">{donor.full_name}</h3>
                             <p className="text-sm text-gray-500">
-                              ID: {donor.hospital_display_id ? `#${donor.hospital_display_id}` : donor.donor_id} • Age: {donor.age} • {donor.gender}
+                              ID: {donor.hospital_display_id ? `#${donor.hospital_display_id}` : donor.donor_id} • Age: {donor.age} • {donor.gender} • {donor.living_status || 'Living'}
                             </p>
                           </div>
                           <div className="flex space-x-2">
@@ -809,7 +834,7 @@ export default function ViewDonors() {
                   </div>
                   <p className="text-gray-600 mt-1">{viewDonor.full_name}</p>
                   <p className="text-gray-600">
-                    {viewDonor.age} years • {viewDonor.gender}
+                    {viewDonor.age} years • {viewDonor.gender} • {viewDonor.living_status || 'Living'} ({viewDonor.condition_reason || (viewDonor.living_status === 'Deceased' ? 'Unknown' : 'Voluntary/Altruistic')})
                   </p>
                   <p className="text-gray-600">
                     Blood Type: {viewDonor.blood_type}

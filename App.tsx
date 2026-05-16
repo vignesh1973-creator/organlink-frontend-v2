@@ -39,6 +39,7 @@ import ViewDonors from "./pages/hospital/ViewDonors";
 import AIMatching from "./pages/hospital/AIMatching";
 import HospitalReports from "./pages/hospital/Reports";
 import HospitalFAQs from "./pages/hospital/FAQs";
+import HospitalAbout from "./pages/hospital/About";
 import OrganizationFAQs from "./pages/organization/FAQs";
 import { AdminAuthProvider } from "./contexts/AdminAuthContext";
 import { HospitalAuthProvider } from "./contexts/HospitalAuthContext";
@@ -93,6 +94,7 @@ const App = () => (
                         element={<HospitalReports />}
                       />
                       <Route path="/hospital/faqs" element={<HospitalFAQs />} />
+                      <Route path="/hospital/about" element={<HospitalAbout />} />
 
                       {/* Organization Routes */}
                       <Route

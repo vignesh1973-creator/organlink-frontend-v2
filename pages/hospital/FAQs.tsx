@@ -17,6 +17,10 @@ const faqData = [
     icon: HelpCircle,
     faqs: [
       {
+        question: "Can anyone donate any organ voluntarily?",
+        answer: "No. Donation depends on medical compatibility, legal approval, donor health condition, and ethical regulations under transplantation laws."
+      },
+      {
         question: "What is OrganLink?",
         answer: "OrganLink is a blockchain-powered organ donation management system that connects hospitals, patients, and donors. It ensures secure, transparent, and efficient organ matching while maintaining data integrity through blockchain technology."
       },

@@ -9,6 +9,7 @@ import {
   Search,
   HelpCircle,
   Activity,
+  Info,
 } from "lucide-react";
 
 const navigation = [
@@ -51,6 +52,11 @@ const navigation = [
     name: "FAQs",
     href: "/hospital/faqs",
     icon: HelpCircle,
+  },
+  {
+    name: "About",
+    href: "/hospital/about",
+    icon: Info,
   },
 ];
 

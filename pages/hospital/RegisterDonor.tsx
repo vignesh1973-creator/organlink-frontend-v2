@@ -44,6 +44,8 @@ interface DonorFormData {
   guardian_phone: string;
   govt_id_type: string;
   govt_id_number: string;
+  living_status: string;
+  condition_reason: string;
 }
 
 interface SignatureUploadStatus {
@@ -71,6 +73,8 @@ export default function RegisterDonor() {
     guardian_phone: "",
     govt_id_type: "",
     govt_id_number: "",
+    living_status: "Living",
+    condition_reason: "Voluntary/Altruistic",
   });
 
   const [signatureStatus, setSignatureStatus] = useState<SignatureUploadStatus>(
@@ -566,25 +570,76 @@ export default function RegisterDonor() {
                       </div>
                     </div>
 
-                    <div>
-                      <Label htmlFor="blood_type">Blood Type *</Label>
-                      <Select
-                        value={formData.blood_type}
-                        onValueChange={(value) =>
-                          handleInputChange("blood_type", value)
-                        }
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select blood type" />
-                        </SelectTrigger>
-                        <SelectContent side="bottom">
-                          {bloodTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="blood_type">Blood Type *</Label>
+                        <Select
+                          value={formData.blood_type}
+                          onValueChange={(value) =>
+                            handleInputChange("blood_type", value)
+                          }
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select blood type" />
+                          </SelectTrigger>
+                          <SelectContent side="bottom">
+                            {bloodTypes.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="living_status">Living Status *</Label>
+                        <Select
+                          value={formData.living_status}
+                          onValueChange={(value) =>
+                            handleInputChange("living_status", value)
+                          }
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select living status" />
+                          </SelectTrigger>
+                          <SelectContent side="bottom">
+                            <SelectItem value="Living">Living</SelectItem>
+                            <SelectItem value="Deceased">Deceased</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Dynamic Reason Field based on Living Status */}
+                      <div className="md:col-span-2">
+                        <Label htmlFor="condition_reason">
+                          {formData.living_status === 'Living' ? 'Donation Type *' : 'Cause of Death *'}
+                        </Label>
+                        <Select
+                          value={formData.condition_reason}
+                          onValueChange={(value) =>
+                            handleInputChange("condition_reason", value)
+                          }
+                        >
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder="Select reason" />
+                          </SelectTrigger>
+                          <SelectContent side="bottom">
+                            {formData.living_status === 'Living' ? (
+                              <>
+                                <SelectItem value="Voluntary/Altruistic">Voluntary/Altruistic</SelectItem>
+                                <SelectItem value="Directed/Family">Directed/Family</SelectItem>
+                              </>
+                            ) : (
+                              <>
+                                <SelectItem value="Brain Dead">Brain Dead</SelectItem>
+                                <SelectItem value="Cardiac/Circulatory Death">Cardiac/Circulatory Death</SelectItem>
+                                <SelectItem value="Accident/Trauma">Accident/Trauma</SelectItem>
+                              </>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
 
 
